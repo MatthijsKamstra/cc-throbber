@@ -1,0 +1,17 @@
+-lib cc-sketch
+-lib cc-sketch-plus
+# -lib hxquicksettings
+# -lib thx.color
+# -lib hxColorToolkit
+# -lib msignal
+# -lib mloader
+# -lib uglifyjs
+-cp src
+-main Main
+-js docs/cc_throbber.js
+# -D source-map-content
+# -D state=debug
+-debug
+# -dce full
+# -dce no
+
