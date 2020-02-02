@@ -1,10 +1,11 @@
 package test;
 
 import cc.model.constants.Paper.*;
+import Sketcher.Globals.*;
+import Sketcher;
+import sketcher.util.ColorUtil.*;
 import draw.IBase; // sketch-plus
 import draw.Text;
-import Sketch;
-import cc.util.ColorUtil.*;
 import js.Browser.*;
 
 using StringTools;
@@ -35,11 +36,16 @@ class VBase extends SketcherBase {
 			this.cx = (paperW / 2);
 			this.cy = (paperH / 2);
 
-			this.settings = new Settings(paperW, paperH, 'svg');
+			this.settings = new Settings(paperW, paperH, 'canvas');
 			settings.autostart = true;
 			settings.padding = 10;
 			settings.scale = false;
-			settings.elementID = 'sketcher-svg-wrapper';
+			settings.elementID = 'sketcher-canvas-wrapper';
+			// this.settings = new Settings(paperW, paperH, 'svg');
+			// settings.autostart = true;
+			// settings.padding = 10;
+			// settings.scale = false;
+			// settings.elementID = 'sketcher-svg-wrapper';
 		} else {
 			this.settings = set;
 
