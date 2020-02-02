@@ -1,5 +1,8 @@
 package test;
 
+import sketcher.draw.Text.TextAnchorType;
+import sketcher.draw.Text.AlignmentBaselineType;
+import sketcher.draw.Text.TextAlignType;
 import draw.AST.LineCap;
 import haxe.Timer;
 import sketcher.export.*;
@@ -12,7 +15,7 @@ import sketcher.AST;
 import Sketcher.Globals.*;
 import Sketcher;
 
-class Test extends test.VBase {
+class TestThrobber extends test.VBase {
 	var isGoogleFontLoaded:Bool = false;
 
 	var radiusSmall:Float = 100;
@@ -111,7 +114,6 @@ class Test extends test.VBase {
 	// ____________________________________ create animation ____________________________________
 
 	function drawShape() {
-		trace('xxxxxxxxx');
 		// if (!isStartTimerSet && !isDebug) {
 		// 	initRecording();
 		// }
@@ -119,23 +121,28 @@ class Test extends test.VBase {
 		// reset previous sketch
 		sketch.clear();
 
-		// // background gradient
-		// var gradient = sketch.makeGradient('#B993D6', '#8CA6DB');
-		// gradient.id = 'dirty-fog';
+		// background gradient
+		var gradient = sketch.makeGradient('#B993D6', '#8CA6DB');
+		gradient.id = 'dirty-fog';
 
-		// // background color
-		// var bg = sketch.makeRectangle(0, 0, w, h, false);
-		// bg.id = "bg color";
-		// var bg1 = sketch.makeRectangle(0, 0, w, h, false);
-		// bg1.id = "gradient color yoda";
+		// background color
+		var bg = sketch.makeRectangle(0, 0, w, h, false);
+		bg.id = "bg color";
+		var bg1 = sketch.makeRectangle(0, 0, w, h, false);
+		bg1.id = "gradient color yoda";
 		// // bg1.fillColor = 'url(#dirty-fog)'; // works
-		// bg1.fillGradientColor = 'dirty-fog';
+		bg1.fillGradientColor = 'dirty-fog';
 
-		// // group
-		// var bgGroup = sketch.makeGroup([bg, bg1]);
-		// bgGroup.id = "sketch background";
+		// group
+		var bgGroup = sketch.makeGroup([bg, bg1]); // , bg1
+		bgGroup.id = "sketch background";
 		// bgGroup.fill = getColourObj(BLACK);
-		// // bgGroup.opacity = 0;
+		// bgGroup.opacity = 0;
+
+		// currently the svg way of creating gradients doesn't work with canvas
+		if (settings.type.toLowerCase() == 'canvas') {
+			var gradient = sketch.makeGradient('#B993D6', '#8CA6DB');
+		}
 
 		// vector files groups
 		var _posArray:Array<draw.IBase> = [];
@@ -154,26 +161,26 @@ class Test extends test.VBase {
 			sketcher.debug.Grid.gridDots(sketch, grid);
 		}
 
-		// // var pct = 0.35;
+		var pct = 0.30;
 		// var pct = frameCounter / frameTotal;
-		// // setup throbbers
-		// throbberOne(grid.array[0], pct);
-		// throbberTwo(grid.array[1], pct);
-		// throbberThree(grid.array[2], pct);
-		// throbberFour(grid.array[3], pct);
-		// throbberFive(grid.array[4], pct);
-		// throbberSix(grid.array[5], pct);
-		// throbberSeven(grid.array[6], pct);
-		// throbberEight(grid.array[7], pct);
-		// throbberNine(grid.array[8], pct);
+		// setup throbbers
+		throbberOne(grid.array[0], pct);
+		throbberTwo(grid.array[1], pct);
+		throbberThree(grid.array[2], pct);
+		throbberFour(grid.array[3], pct);
+		throbberFive(grid.array[4], pct);
+		throbberSix(grid.array[5], pct);
+		throbberSeven(grid.array[6], pct); // text doesn't work yet for canvas
+		throbberEight(grid.array[7], pct);
+		throbberNine(grid.array[8], pct);
 
 		// groups
 		var posG = sketch.makeGroup(_posArray);
 		posG.id = "position of throbbers";
 		posG.fillColor = getColourObj(WHITE);
-		// posG.isVisible = false;
-		if (isDebug)
-			posG.opacity = 0.2;
+		posG.isVisible = false;
+		// if (isDebug)
+		// 	posG.opacity = 0.2;
 
 		// draw the create svg
 		sketch.update();
@@ -335,19 +342,26 @@ class Test extends test.VBase {
 		var circle = sketch.makeCircle(p.x, p.y, _r - (_stroke * 0.6));
 		circle.fillColor = getColourObj(WHITE);
 		// circle.fillOpacity = .9;
-		/*
-			var total = 100;
-			var str = Std.string(Math.ceil(100 * pct)) + "%";
-			var txt1 = cc.draw.Text.create(sketch, str)
-				.font("Inconsolata")
-				.size(50)
-				.fontWeight('400')
-				.color(BLACK)
-				.centerAlign()
-				.middleBaseline()
-				.pos(p.x, p.y + 3)
-				.draw();
-		 */
+
+		var total = 100;
+		var str = Std.string(Math.ceil(100 * pct)) + "%";
+		var text = sketch.makeText(str, p.x, p.y + 3);
+		text.fontFamily = 'Inconsolata';
+		text.fillColor = getColourObj(BLACK);
+		text.fontSize = '50';
+		text.fontWeight = '400';
+		text.textAlign = (TextAlignType.Center);
+		text.alignmentBaseline = (AlignmentBaselineType.Middle);
+
+		// var txt1 = cc.draw.Text.create(sketch, str)
+		// 	.font("Inconsolata")
+		// 	.size(50)
+		// 	.fontWeight('400')
+		// 	.color(BLACK)
+		// 	.centerAlign()
+		// 	.middleBaseline()
+		// 	.pos(p.x, p.y + 3)
+		// 	.draw();
 	}
 
 	function throbberEight(p:Point, pct:Float) {
@@ -396,7 +410,7 @@ class Test extends test.VBase {
 		circle.setRotate(-90, p.x, p.y); // rotate it 90 degree to start on top
 
 		// calculate new dash
-		var devide = 8;
+		var devide = 7;
 		var dashStroke = 2;
 		var noDash = (omtrek / devide) - dashStroke;
 		// dashed line
