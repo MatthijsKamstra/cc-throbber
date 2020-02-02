@@ -1,8 +1,14 @@
 package test;
 
+import sketcher.util.MathUtil;
 import draw.AST.LineCap;
 import haxe.Timer;
 import sketcher.export.*;
+import sketcher.util.GridUtil;
+import sketcher.util.ColorUtil.*;
+import js.Browser.*;
+import js.html.*;
+import Sketcher.Globals.*;
 
 class CCThrobber extends test.VBase {
 	var isGoogleFontLoaded:Bool = false;
@@ -25,7 +31,7 @@ class CCThrobber extends test.VBase {
 	var videoExport:VideoExport;
 
 	public function new() {
-		Text.embedGoogleFont('Six+Caps|Medula+One|Dosis:200,300,400,500,600,700,800|Source+Code+Pro:200,300,400,500,600,700,900|Roboto+Mono:100,100i,300,300i,400,400i,500,500i,700,700i',
+		cc.draw.Text.embedGoogleFont('Six+Caps|Medula+One|Dosis:200,300,400,500,600,700,800|Source+Code+Pro:200,300,400,500,600,700,900|Roboto+Mono:100,100i,300,300i,400,400i,500,500i,700,700i',
 			onEmbedHandler);
 		super();
 	}
@@ -145,7 +151,7 @@ class CCThrobber extends test.VBase {
 
 		// var str = Std.string((seconds + 0) - Math.floor(Timer.stamp() - startTimer)); // time based.... not a good idea when recording data
 		var str = Std.string(Math.ceil((frameTotal - frameCounter) / FPS));
-		var txt1 = Text.create(sketch, str)
+		var txt1 = cc.draw.Text.create(sketch, str)
 			.font("Source+Code+Pro")
 			.size(200)
 			.fontWeight('300')

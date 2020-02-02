@@ -3,6 +3,14 @@ package test;
 import draw.AST.LineCap;
 import haxe.Timer;
 import sketcher.export.*;
+import sketcher.util.GridUtil;
+import sketcher.util.ColorUtil.*;
+import sketcher.util.MathUtil;
+import js.Browser.*;
+import js.html.*;
+import sketcher.AST;
+import Sketcher.Globals.*;
+import Sketcher;
 
 class CCListThrobber extends test.VBase {
 	var isGoogleFontLoaded:Bool = false;
@@ -21,14 +29,15 @@ class CCListThrobber extends test.VBase {
 	var grid:GridUtil;
 
 	// canvas
-	var canvas:CanvasElement;
-	var ctx:CanvasRenderingContext2D;
+	// var canvas:CanvasElement;
+	// var ctx:CanvasRenderingContext2D;
 	var downloadButton:AnchorElement;
+
 	// export
-	var videoExport:VideoExport;
+	// var videoExport:VideoExport;
 
 	public function new() {
-		Text.embedGoogleFont('Inconsolata:400,700', onEmbedHandler);
+		cc.draw.Text.embedGoogleFont('Inconsolata:400,700', onEmbedHandler);
 		super();
 	}
 
@@ -37,10 +46,10 @@ class CCListThrobber extends test.VBase {
 	function onEmbedHandler(e) {
 		trace('onEmbedHandler: "${e}"');
 		isGoogleFontLoaded = true;
-		initRecording();
-		haxe.Timer.delay(function() {
-			//
-		}, 500);
+		// // initRecording();
+		// haxe.Timer.delay(function() {
+		// 	//
+		// }, 500);
 	}
 
 	// ____________________________________ override setup ____________________________________
@@ -54,15 +63,15 @@ class CCListThrobber extends test.VBase {
 		frameCounter = 0;
 		frameTotal = FPS * seconds;
 
-		// isDebug = true;
+		isDebug = true;
 
-		grid = new GridUtil();
+		grid = new GridUtil(w, h);
 		grid.setNumbered(3, 3); // 3 horizontal, 3 vertical
 		grid.setIsCenterPoint(true); // default true, but can be set if needed
 
 		initElements();
 
-		drawShape();
+		// drawShape();
 	}
 
 	// ____________________________________ setup ____________________________________
@@ -76,12 +85,12 @@ class CCListThrobber extends test.VBase {
 		// document.body.appendChild(div);
 
 		// create canvas
-		canvas = document.createCanvasElement();
-		canvas.width = this.settings.width;
-		canvas.height = this.settings.height;
+		// canvas = document.createCanvasElement();
+		// canvas.width = this.settings.width;
+		// canvas.height = this.settings.height;
 
 		// ctx
-		ctx = canvas.getContext2d();
+		// ctx = canvas.getContext2d();
 		// add it to the wrapper... might not be needed for export (isdebug?)
 		// div.appendChild(canvas);
 
@@ -92,29 +101,29 @@ class CCListThrobber extends test.VBase {
 		downloadButton.innerText = 'download';
 		document.body.appendChild(downloadButton);
 
-		// setup video exporter of sketcher
-		videoExport = new VideoExport();
-		videoExport.setCanvas(canvas);
-		// videoExport.setSvg(mysvg);
-		// videoExport.setAudio(audioEl);
-		videoExport.setDownload(downloadButton); // optional
-		// videoExport.setVideo(mypreviewvideo); // optional
-		videoExport.setup(); // activate everything
+		// // setup video exporter of sketcher
+		// videoExport = new VideoExport();
+		// videoExport.setCanvas(canvas);
+		// // videoExport.setSvg(mysvg);
+		// // videoExport.setAudio(audioEl);
+		// videoExport.setDownload(downloadButton); // optional
+		// // videoExport.setVideo(mypreviewvideo); // optional
+		// videoExport.setup(); // activate everything
 	}
 
 	// ____________________________________ convert svg to image/canvas ____________________________________
 
 	function convertSVG2Canvas() {
-		var image = new js.html.Image();
-		image.onload = function() {
-			ctx.drawImage(image, 0, 0, this.settings.width, this.settings.height);
-			// cc.tool.ExportFile.downloadImageBg(ctx, isJpg, filename, isTransparant);
-		}
-		image.onerror = function(e) {
-			console.warn(e);
-		}
-		// image.src = 'data:image/svg+xml,${sketch.svg}';
-		image.src = 'data:image/svg+xml;base64,${window.btoa(sketch.svg)}';
+		// var image = new js.html.Image();
+		// image.onload = function() {
+		// 	ctx.drawImage(image, 0, 0, this.settings.width, this.settings.height);
+		// 	// cc.tool.ExportFile.downloadImageBg(ctx, isJpg, filename, isTransparant);
+		// }
+		// image.onerror = function(e) {
+		// 	console.warn(e);
+		// }
+		// // image.src = 'data:image/svg+xml,${sketch.svg}';
+		// image.src = 'data:image/svg+xml;base64,${window.btoa(sketch.svg)}';
 	}
 
 	// ____________________________________ create animation ____________________________________
@@ -122,11 +131,12 @@ class CCListThrobber extends test.VBase {
 	function initRecording() {
 		startTimer = Timer.stamp();
 		isStartTimerSet = true;
-		videoExport.start();
-		trace('initRecording: ${frameCounter}, ${frameTotal}');
+		// videoExport.start();
+		console.info('initRecording: frameCounter: ${frameCounter}, frameTotal: ${frameTotal}');
 	}
 
-	function drawShape() {
+	function _drawShape() {
+		trace('xxxxxxxxx');
 		// if (!isStartTimerSet && !isDebug) {
 		// 	initRecording();
 		// }
@@ -166,7 +176,7 @@ class CCListThrobber extends test.VBase {
 
 		// quick generate grid
 		if (isDebug) {
-			util.TestUtil.gridDots(sketch, grid);
+			sketcher.debug.Grid.gridDots(sketch, grid);
 		}
 
 		// var pct = 0.35;
@@ -186,7 +196,7 @@ class CCListThrobber extends test.VBase {
 		var posG = sketch.makeGroup(_posArray);
 		posG.id = "position of throbbers";
 		posG.fillColor = getColourObj(WHITE);
-		posG.opacity = 0;
+		posG.isVisible = false;
 		// if (isDebug)
 		// 	posG.opacity = 0.2;
 
@@ -202,7 +212,7 @@ class CCListThrobber extends test.VBase {
 			console.warn('start ${startTimer}');
 			console.warn('current ${Timer.stamp()}');
 			console.warn('current ${Timer.stamp() - startTimer}');
-			videoExport.stop();
+			// videoExport.stop();
 			stop();
 		}
 
@@ -363,18 +373,19 @@ class CCListThrobber extends test.VBase {
 		var circle = sketch.makeCircle(p.x, p.y, _r - (_stroke * 0.6));
 		circle.fillColor = getColourObj(WHITE);
 		// circle.fillOpacity = .9;
-
-		var total = 100;
-		var str = Std.string(Math.ceil(100 * pct)) + "%";
-		var txt1 = Text.create(sketch, str)
-			.font("Inconsolata")
-			.size(50)
-			.fontWeight('400')
-			.color(BLACK)
-			.centerAlign()
-			.middleBaseline()
-			.pos(p.x, p.y + 3)
-			.draw();
+		/*
+			var total = 100;
+			var str = Std.string(Math.ceil(100 * pct)) + "%";
+			var txt1 = cc.draw.Text.create(sketch, str)
+				.font("Inconsolata")
+				.size(50)
+				.fontWeight('400')
+				.color(BLACK)
+				.centerAlign()
+				.middleBaseline()
+				.pos(p.x, p.y + 3)
+				.draw();
+		 */
 	}
 
 	function throbberEight(p:Point, pct:Float) {
@@ -446,8 +457,10 @@ class CCListThrobber extends test.VBase {
 		if (isDebug)
 			trace('DRAW :: ${toString()} -> override public function draw()');
 
+		// stop();
+
 		if (isGoogleFontLoaded && isStartTimerSet) {
-			drawShape();
+			_drawShape();
 		}
 		if (isDebug) {
 			stop();

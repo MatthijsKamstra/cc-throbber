@@ -3,13 +3,14 @@ package;
 import cc.model.constants.App;
 import js.Browser.*;
 import test.*;
+import Sketcher.Globals.*;
 
 using StringTools;
 
 class Main {
 	var count:Int;
 	var hash:String;
-	var ccTypeArray:Array<Class<Dynamic>> = [test.CCThrobber, test.CCListThrobber];
+	var ccTypeArray:Array<Class<Dynamic>> = [test.Test];
 
 	public function new() {
 		// console.log('START :: main');
