@@ -10,7 +10,7 @@ using StringTools;
 class Main {
 	var count:Int;
 	var hash:String;
-	var ccTypeArray:Array<Class<Dynamic>> = [test.Test];
+	var ccTypeArray:Array<Class<Dynamic>> = [test.TestThrobber];
 
 	public function new() {
 		// console.log('START :: main');
