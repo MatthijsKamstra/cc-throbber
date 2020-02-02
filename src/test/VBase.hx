@@ -5,7 +5,7 @@ import Sketcher.Globals.*;
 import Sketcher;
 import sketcher.util.ColorUtil.*;
 import draw.IBase; // sketch-plus
-import draw.Text;
+import sketcher.draw.Text;
 import js.Browser.*;
 
 using StringTools;
