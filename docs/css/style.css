@@ -1,13 +1,30 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+}
+
+svg {
+  height: 100%;
+  width: 100%;
+  background-color: silver;
+}
+
 canvas {
   /* border: 1px solid pink; */
   /* width: 500px; */
   background-color: white;
   background-image: url(../img/pattern/bg.gif);
   background-repeat: repeat;
+  height: 100%;
+  width: 100%;
 }
 
 #sketcher-svg,
 #sketcher-canvas,
+#sketcher-canvas-wrapper,
 #canvas-wrapper,
 #svg-wrapper {
   /* height: 100%; */
@@ -16,21 +33,4 @@ canvas {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-svg {
-  height: 100%;
-  width: 100%;
-}
-
-svg {
-  background-color: silver;
-}
-
-html,
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  background-color: #f5f5f5;
 }
