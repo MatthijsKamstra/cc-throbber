@@ -135,8 +135,7 @@ class CCListThrobber extends test.VBase {
 		console.info('initRecording: frameCounter: ${frameCounter}, frameTotal: ${frameTotal}');
 	}
 
-	function _drawShape() {
-		trace('xxxxxxxxx');
+	function drawShape() {
 		// if (!isStartTimerSet && !isDebug) {
 		// 	initRecording();
 		// }
@@ -434,7 +433,7 @@ class CCListThrobber extends test.VBase {
 		circle.setRotate(-90, p.x, p.y); // rotate it 90 degree to start on top
 
 		// calculate new dash
-		var devide = 8;
+		var devide = 7;
 		var dashStroke = 2;
 		var noDash = (omtrek / devide) - dashStroke;
 		// dashed line
@@ -460,7 +459,7 @@ class CCListThrobber extends test.VBase {
 		// stop();
 
 		if (isGoogleFontLoaded && isStartTimerSet) {
-			_drawShape();
+			drawShape();
 		}
 		if (isDebug) {
 			stop();
