@@ -16,28 +16,23 @@ import Sketcher.Globals.*;
 import Sketcher;
 
 class TestThrobber extends test.VBase {
+	// font installed?
 	var isGoogleFontLoaded:Bool = false;
-
+	// radius
 	var radiusSmall:Float = 100;
-
 	// time
 	var startTimer:Float;
 	var isStartTimerSet:Bool = false;
 	// frames
-	var seconds:Float = 30; // 60; // 10;
+	var seconds:Float = 60; // 60; // 10;
 	var FPS:Int = 60;
 	var frameTotal:Float = Math.POSITIVE_INFINITY; // 60 fps * 60 seconden = 3600
 	var frameCounter:Int = 0;
-	//
+	// grid
 	var grid:GridUtil;
-
-	// canvas
-	// var canvas:CanvasElement;
-	// var ctx:CanvasRenderingContext2D;
-	var downloadButton:AnchorElement;
-
 	// export
-	// var videoExport:VideoExport;
+	var downloadButton:AnchorElement;
+	var videoExport:VideoExport;
 
 	public function new() {
 		cc.draw.Text.embedGoogleFont('Inconsolata:400,700', onEmbedHandler);
@@ -62,36 +57,19 @@ class TestThrobber extends test.VBase {
 		frameCounter = 0;
 		frameTotal = FPS * seconds;
 
-		isDebug = true;
+		// isDebug = true;
 
 		grid = new GridUtil(w, h);
 		grid.setNumbered(3, 3); // 3 horizontal, 3 vertical
 		grid.setIsCenterPoint(true); // default true, but can be set if needed
 
 		initElements();
-
-		// drawShape();
 	}
 
 	// ____________________________________ setup ____________________________________
 
 	function initElements() {
 		console.log('initElement');
-
-		// create canvas wrapper
-		// var div = document.createDivElement();
-		// div.id = 'canvas-wrapper';
-		// document.body.appendChild(div);
-
-		// create canvas
-		// canvas = document.createCanvasElement();
-		// canvas.width = this.settings.width;
-		// canvas.height = this.settings.height;
-
-		// ctx
-		// ctx = canvas.getContext2d();
-		// add it to the wrapper... might not be needed for export (isdebug?)
-		// div.appendChild(canvas);
 
 		// create a download button
 		var downloadButton = document.createAnchorElement();
@@ -100,23 +78,30 @@ class TestThrobber extends test.VBase {
 		downloadButton.innerText = 'download';
 		document.body.appendChild(downloadButton);
 
-		// // setup video exporter of sketcher
-		// videoExport = new VideoExport();
-		// videoExport.setCanvas(canvas);
-		// // videoExport.setSvg(mysvg);
-		// // videoExport.setAudio(audioEl);
-		// videoExport.setDownload(downloadButton); // optional
-		// // videoExport.setVideo(mypreviewvideo); // optional
-		// videoExport.setup(); // activate everything
+		// setup video exporter of sketcher
+		videoExport = new VideoExport();
+		videoExport.setCanvas(sketch.canvas);
+		// videoExport.setSvg(mysvg);
+		// videoExport.setAudio(audioEl);
+		videoExport.setDownload(downloadButton); // optional
+		// videoExport.setVideo(mypreviewvideo); // optional
+		videoExport.setup(); // activate everything
 	}
 
-	// ____________________________________ convert svg to image/canvas ____________________________________
 	// ____________________________________ create animation ____________________________________
 
+	function initRecording() {
+		startTimer = Timer.stamp();
+		isStartTimerSet = true;
+		frameCounter = 0;
+		videoExport.start();
+		console.info('initRecording: frameCounter: ${frameCounter}, frameTotal: ${frameTotal}');
+	}
+
 	function drawShape() {
-		// if (!isStartTimerSet && !isDebug) {
-		// 	initRecording();
-		// }
+		if (!isStartTimerSet && !isDebug && isGoogleFontLoaded) {
+			initRecording();
+		}
 
 		// reset previous sketch
 		sketch.clear();
@@ -130,7 +115,7 @@ class TestThrobber extends test.VBase {
 		bg.id = "bg color";
 		var bg1 = sketch.makeRectangle(0, 0, w, h, false);
 		bg1.id = "gradient color yoda";
-		// // bg1.fillColor = 'url(#dirty-fog)'; // works
+		// bg1.fillColor = 'url(#dirty-fog)'; // works
 		bg1.fillGradientColor = 'dirty-fog';
 
 		// group
@@ -161,16 +146,16 @@ class TestThrobber extends test.VBase {
 			sketcher.debug.Grid.gridDots(sketch, grid);
 		}
 
-		var pct = 0.30;
-		// var pct = frameCounter / frameTotal;
+		// var pct = 0.30;
+		var pct = frameCounter / frameTotal;
 		// setup throbbers
 		throbberOne(grid.array[0], pct);
 		throbberTwo(grid.array[1], pct);
 		throbberThree(grid.array[2], pct);
 		throbberFour(grid.array[3], pct);
-		throbberFive(grid.array[4], pct);
+		throbberFive(grid.array[4], pct); // rotate and move doesn't work yet
 		throbberSix(grid.array[5], pct);
-		throbberSeven(grid.array[6], pct); // text doesn't work yet for canvas
+		throbberSeven(grid.array[6], pct);
 		throbberEight(grid.array[7], pct);
 		throbberNine(grid.array[8], pct);
 
@@ -185,6 +170,15 @@ class TestThrobber extends test.VBase {
 		// draw the create svg
 		sketch.update();
 
+		if (frameCounter >= frameTotal) {
+			console.info('$frameCounter >= $frameTotal');
+			console.warn('stop animation');
+			console.warn('start ${startTimer}');
+			console.warn('current ${Timer.stamp()}');
+			console.warn('current ${Timer.stamp() - startTimer}');
+			videoExport.stop();
+			stop();
+		}
 		frameCounter++;
 	}
 
@@ -436,9 +430,9 @@ class TestThrobber extends test.VBase {
 		drawShape();
 		// stop();
 
-		if (isGoogleFontLoaded && isStartTimerSet) {
-			drawShape();
-		}
+		// if (isGoogleFontLoaded && isStartTimerSet) {
+		// 	drawShape();
+		// }
 		if (isDebug) {
 			stop();
 		}

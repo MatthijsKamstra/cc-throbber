@@ -64,7 +64,7 @@ var Main = function() {
 	this.ccTypeArray = [test_TestThrobber];
 	var _gthis = this;
 	window.document.addEventListener("DOMContentLoaded",function(event) {
-		window.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2020-02-02 21:37:46");
+		window.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2020-02-03 21:37:05");
 		_gthis.setupArt();
 		_gthis.setupNav();
 	});
@@ -2356,6 +2356,10 @@ draw_Base.prototype = {
 		this.set_id(id);
 	}
 	,setPosition: function(x,y) {
+		this.set_move({ x : x, y : y});
+		if(y == null) {
+			this.set_move({ x : x, y : 0});
+		}
 		var str = "translate(" + x;
 		if(y != null) {
 			str += "," + y;
@@ -2394,7 +2398,7 @@ draw_Base.prototype = {
 		return str;
 	}
 	,clone: function() {
-		haxe_Log.trace("WIP",{ fileName : "draw/Base.hx", lineNumber : 137, className : "draw.Base", methodName : "clone"});
+		haxe_Log.trace("WIP",{ fileName : "draw/Base.hx", lineNumber : 145, className : "draw.Base", methodName : "clone"});
 		return js_Boot.__cast(JSON.parse(JSON.stringify(this)) , draw_Base);
 	}
 	,useDefaultsCanvas: function() {
@@ -2514,6 +2518,12 @@ draw_Base.prototype = {
 	}
 	,set_rotate: function(value) {
 		return this.rotate = value;
+	}
+	,get_move: function() {
+		return this.move;
+	}
+	,set_move: function(value) {
+		return this.move = value;
 	}
 	,get_transform: function() {
 		return this.transform;
@@ -3829,9 +3839,13 @@ sketcher_draw_Circle.prototype = $extend(draw_Base.prototype,{
 			ctx.save();
 			ctx.translate(this.get_x(),this.get_y());
 			ctx.rotate(cc_util_MathUtil.radians(this.get_rotate()));
+			if(this.get_move() != null) {
+				ctx.translate(this.get_move().x,this.get_move().y);
+			}
 			ctx.arc(0,0,this.get_radius(),0,2 * Math.PI);
 			ctx.restore();
-		} else {
+		}
+		if(this.get_rotate() == null) {
 			ctx.arc(this.get_x(),this.get_y(),this.get_radius(),0,2 * Math.PI);
 		}
 		ctx.fill();
@@ -3839,7 +3853,7 @@ sketcher_draw_Circle.prototype = $extend(draw_Base.prototype,{
 		var tmp = this.get_rotate() != null;
 	}
 	,debug: function() {
-		haxe_Log.trace("" + this.toString(),{ fileName : "sketcher/draw/Circle.hx", lineNumber : 105, className : "sketcher.draw.Circle", methodName : "debug"});
+		haxe_Log.trace("" + this.toString(),{ fileName : "sketcher/draw/Circle.hx", lineNumber : 112, className : "sketcher.draw.Circle", methodName : "debug"});
 	}
 	,get_radius: function() {
 		return this.radius;
@@ -4217,7 +4231,6 @@ sketcher_draw_Text.prototype = $extend(draw_Base.prototype,{
 		ctx.font = StringTools.ltrim("" + _css + " " + this.get_fontSize() + "px " + this.get_fontFamily());
 		ctx.textAlign = this.get_textAlign();
 		ctx.textBaseline = this.get_alignmentBaseline();
-		haxe_Log.trace(this.get_textAnchor(),{ fileName : "sketcher/draw/Text.hx", lineNumber : 157, className : "sketcher.draw.Text", methodName : "ctx", customParams : [this.get_alignmentBaseline()]});
 		ctx.fillText(this.get_str(),this.get_x(),this.get_y());
 		ctx.restore();
 	}
@@ -4312,6 +4325,164 @@ sketcher_draw_Text.prototype = $extend(draw_Base.prototype,{
 	}
 	,__class__: sketcher_draw_Text
 });
+var sketcher_export_TypeSupported = function() { };
+$hxClasses["sketcher.export.TypeSupported"] = sketcher_export_TypeSupported;
+sketcher_export_TypeSupported.__name__ = "sketcher.export.TypeSupported";
+sketcher_export_TypeSupported.checkTypes = function() {
+	if(window.MediaRecorder == undefined) {
+		window.console.error("MediaRecorder not supported, boo");
+	} else {
+		var contentTypes = ["video/ogg","audio/ogg;codecs=vorbis","video/mp4","audio/mp4","video/mp4;codecs=avc1","video/mp4;codecs=\"avc1.4d002a\"","audio/mpeg","video/x-matroska","video/x-matroska;codecs=avc1","video/quicktime","video/webm","video/webm;codecs=daala","video/webm;codecs=h264","audio/webm;codecs=opus","audio/webm;codecs=\"opus\"","video/webm;codecs=vp8","video/webm;codecs=\"vp8\"","video/webm;codecs=\"vp9\"","audio/webm;codecs=\"vorbis\"","video/webm;codecs=\"vp8,vorbis\"","video/webm;codecs=\"vp9,opus\"","video/invalid"];
+		window.console.groupCollapsed("Check if codecs work:");
+		var _g = 0;
+		var _g1 = contentTypes.length;
+		while(_g < _g1) {
+			var i = _g++;
+			if(MediaRecorder.isTypeSupported(contentTypes[i])) {
+				window.console.log("%c Is " + contentTypes[i] + " supported? Maybe!","background: #444; color: #bada55; padding: 2px; border-radius:2px");
+			} else {
+				window.console.log("Is " + contentTypes[i] + " supported? " + (MediaRecorder.isTypeSupported(contentTypes[i]) ? "Maybe!" : "Nope :("));
+			}
+		}
+		window.console.groupEnd();
+	}
+};
+var sketcher_export_VideoExport = function() {
+	sketcher_export_TypeSupported.checkTypes();
+};
+$hxClasses["sketcher.export.VideoExport"] = sketcher_export_VideoExport;
+sketcher_export_VideoExport.__name__ = "sketcher.export.VideoExport";
+sketcher_export_VideoExport.prototype = {
+	setCanvas: function(canvas) {
+		this.canvas = canvas;
+	}
+	,setAudio: function(audio,isActive) {
+		if(isActive == null) {
+			isActive = true;
+		}
+		var _gthis = this;
+		this.audioEl = audio;
+		if(isActive) {
+			this.audioEl.onplay = function() {
+				window.console.info("Play audio");
+				_gthis.startRecording();
+				return;
+			};
+			this.audioEl.onpause = function() {
+				window.console.info("Stop audio");
+				_gthis.stopRecording();
+				return;
+			};
+		}
+	}
+	,setDownload: function(downloadButton) {
+		this.downloadButtonEl = downloadButton;
+		this.downloadButtonEl.classList.add("disabled");
+	}
+	,setOptions: function(options) {
+		this.options = options;
+	}
+	,setVideo: function(video) {
+		this.videoEl = video;
+	}
+	,setup: function() {
+		if(this.options == null) {
+			this.options = { bitsPerSecond : 5500000};
+		}
+		this.setupCombineRecordings();
+		if(this.audioEl != null) {
+			this.setupAudioRecording();
+		}
+		this.setupCanvasRecording();
+	}
+	,start: function() {
+		window.console.info("start recording");
+		this.startRecording();
+	}
+	,stop: function() {
+		window.console.info("stop recording");
+		this.stopRecording();
+	}
+	,startRecording: function() {
+		window.console.info("startRecording");
+		if(this.audioRecorder != null) {
+			this.audioRecorder.start();
+		}
+		this.videoRecorder.start();
+		this.combineRecorder.start();
+	}
+	,stopRecording: function() {
+		window.console.info("stopRecording");
+		if(this.audioRecorder != null) {
+			this.audioRecorder.stop();
+		}
+		this.videoRecorder.stop();
+		this.combineRecorder.stop();
+	}
+	,setupCanvasRecording: function() {
+		var _gthis = this;
+		var canvasStream = this.canvas.captureStream();
+		var videoTrack = canvasStream.getTracks()[0];
+		this.combinedStream.addTrack(videoTrack);
+		this.videoRecorder = new MediaRecorder(canvasStream,this.options);
+		this.videoRecorder.ondataavailable = function(e) {
+			_gthis.onVideoRecordingReady(e);
+			return;
+		};
+	}
+	,setupAudioRecording: function() {
+		var _gthis = this;
+		window.console.info("setupAudioRecording");
+		var audioContext = new AudioContext();
+		var source = audioContext.createMediaElementSource(this.audioEl);
+		source.connect(audioContext.destination);
+		var audioStream = audioContext.createMediaStreamDestination();
+		var audioTrack = audioStream.stream.getTracks()[0];
+		this.combinedStream.addTrack(audioTrack);
+		source.connect(audioStream);
+		this.audioRecorder = new MediaRecorder(audioStream.stream,this.options);
+		this.audioRecorder.ondataavailable = function(e) {
+			_gthis.onAudioRecordingReady(e);
+			return;
+		};
+	}
+	,setupCombineRecordings: function() {
+		var _gthis = this;
+		window.console.info("setupCombineRecordings");
+		this.combinedStream = new MediaStream();
+		this.combineRecorder = new MediaRecorder(this.combinedStream,this.options);
+		this.combineRecorder.ondataavailable = function(e) {
+			_gthis.onCombineRecordingReady(e);
+			return;
+		};
+	}
+	,onAudioRecordingReady: function(e) {
+		window.console.info("Finished onAudioRecordingReady. Got blob:",e.data);
+	}
+	,onVideoRecordingReady: function(e) {
+		window.console.info("Finished onVideoRecordingReady. Got blob:",e.data);
+	}
+	,onCombineRecordingReady: function(e) {
+		window.console.info("Finished onCombineRecordingReady. Got blob:",e.data);
+		var videoUrl = URL.createObjectURL(e.data);
+		var blob = new Blob([e.data]);
+		if(this.videoEl != null) {
+			this.videoEl.src = videoUrl;
+			this.videoEl.play();
+		}
+		var filename = "RecordedVideo_" + new Date().getTime();
+		if(this.downloadButtonEl != null) {
+			this.downloadButtonEl.href = videoUrl;
+			this.downloadButtonEl.download = "" + filename + ".webm";
+			this.downloadButtonEl.classList.remove("disabled");
+		} else {
+			window.console.warn("No downloadButtonEl is not created yet");
+		}
+		window.console.info("Successfully recorded " + blob.size + " bytes of " + blob.type + " media.");
+		window.console.warn("#!/bin/bash" + "\n\n" + "# [mck] for now just convert to mp4 seems the best solution" + "\n\n" + "say \"start convert webm to mp4\"" + "\n" + ("ffmpeg -i " + filename + ".webm\n") + ("ffmpeg -y -i " + filename + ".webm " + filename + ".mp4\n") + ("ffmpeg -y -r 30 -i " + filename + ".webm -c:v libx264 -strict -2 -pix_fmt yuv420p -shortest -filter:v \"setpts=0.5*PTS\" " + filename + "_30fps.mp4\n") + ("ffmpeg -y -r 60 -i " + filename + ".webm -c:v libx264 -strict -2 -pix_fmt yuv420p -shortest -filter:v \"setpts=0.5*PTS\" " + filename + "_60fps.mp4\n") + ("ffmpeg -y -r 30 -i " + filename + ".mp4 -c:v libx264 -strict -2 -pix_fmt yuv420p -shortest -filter:v \"setpts=0.5*PTS\" " + filename + "_30fps_inputmp4.mp4") + "\n" + "say \"end convert webm to mp4\"");
+	}
+	,__class__: sketcher_export_VideoExport
+};
 var sketcher_util_ColorUtil = function() {
 };
 $hxClasses["sketcher.util.ColorUtil"] = sketcher_util_ColorUtil;
@@ -5079,7 +5250,7 @@ var test_TestThrobber = function() {
 	this.frameCounter = 0;
 	this.frameTotal = Infinity;
 	this.FPS = 60;
-	this.seconds = 30;
+	this.seconds = 60;
 	this.isStartTimerSet = false;
 	this.radiusSmall = 100;
 	this.isGoogleFontLoaded = false;
@@ -5091,7 +5262,7 @@ test_TestThrobber.__name__ = "test.TestThrobber";
 test_TestThrobber.__super__ = test_VBase;
 test_TestThrobber.prototype = $extend(test_VBase.prototype,{
 	onEmbedHandler: function(e) {
-		haxe_Log.trace("onEmbedHandler: \"" + e + "\"",{ fileName : "src/test/TestThrobber.hx", lineNumber : 50, className : "test.TestThrobber", methodName : "onEmbedHandler"});
+		haxe_Log.trace("onEmbedHandler: \"" + e + "\"",{ fileName : "src/test/TestThrobber.hx", lineNumber : 45, className : "test.TestThrobber", methodName : "onEmbedHandler"});
 		this.isGoogleFontLoaded = true;
 	}
 	,setup: function() {
@@ -5101,7 +5272,6 @@ test_TestThrobber.prototype = $extend(test_VBase.prototype,{
 		}
 		this.frameCounter = 0;
 		this.frameTotal = this.FPS * this.seconds;
-		this.isDebug = true;
 		this.grid = new sketcher_util_GridUtil(Globals.w,Globals.h);
 		this.grid.setNumbered(3,3);
 		this.grid.setIsCenterPoint(true);
@@ -5114,8 +5284,22 @@ test_TestThrobber.prototype = $extend(test_VBase.prototype,{
 		downloadButton.href = "#";
 		downloadButton.innerText = "download";
 		window.document.body.appendChild(downloadButton);
+		this.videoExport = new sketcher_export_VideoExport();
+		this.videoExport.setCanvas(this.sketch.canvas);
+		this.videoExport.setDownload(downloadButton);
+		this.videoExport.setup();
+	}
+	,initRecording: function() {
+		this.startTimer = Date.now() / 1000;
+		this.isStartTimerSet = true;
+		this.frameCounter = 0;
+		this.videoExport.start();
+		window.console.info("initRecording: frameCounter: " + this.frameCounter + ", frameTotal: " + this.frameTotal);
 	}
 	,drawShape: function() {
+		if(!this.isStartTimerSet && !this.isDebug && this.isGoogleFontLoaded) {
+			this.initRecording();
+		}
 		this.sketch.clear();
 		var gradient = this.sketch.makeGradient("#B993D6","#8CA6DB");
 		gradient.set_id("dirty-fog");
@@ -5141,7 +5325,7 @@ test_TestThrobber.prototype = $extend(test_VBase.prototype,{
 		if(this.isDebug) {
 			sketcher_debug_Grid.gridDots(this.sketch,this.grid);
 		}
-		var pct = 0.30;
+		var pct = this.frameCounter / this.frameTotal;
 		this.throbberOne(this.grid.array[0],pct);
 		this.throbberTwo(this.grid.array[1],pct);
 		this.throbberThree(this.grid.array[2],pct);
@@ -5156,6 +5340,15 @@ test_TestThrobber.prototype = $extend(test_VBase.prototype,{
 		posG.set_fillColor(sketcher_util_ColorUtil.getColourObj(sketcher_util_ColorUtil.WHITE));
 		posG.set_isVisible(false);
 		this.sketch.update();
+		if(this.frameCounter >= this.frameTotal) {
+			window.console.info("" + this.frameCounter + " >= " + this.frameTotal);
+			window.console.warn("stop animation");
+			window.console.warn("start " + this.startTimer);
+			window.console.warn("current " + Date.now() / 1000);
+			window.console.warn("current " + (Date.now() / 1000 - this.startTimer));
+			this.videoExport.stop();
+			this.stop();
+		}
 		this.frameCounter++;
 	}
 	,throbberOne: function(p,pct) {
@@ -5329,12 +5522,9 @@ test_TestThrobber.prototype = $extend(test_VBase.prototype,{
 	}
 	,draw: function() {
 		if(this.isDebug) {
-			haxe_Log.trace("DRAW :: " + this.toString() + " -> override public function draw()",{ fileName : "src/test/TestThrobber.hx", lineNumber : 434, className : "test.TestThrobber", methodName : "draw"});
+			haxe_Log.trace("DRAW :: " + this.toString() + " -> override public function draw()",{ fileName : "src/test/TestThrobber.hx", lineNumber : 428, className : "test.TestThrobber", methodName : "draw"});
 		}
 		this.drawShape();
-		if(this.isGoogleFontLoaded && this.isStartTimerSet) {
-			this.drawShape();
-		}
 		if(this.isDebug) {
 			this.stop();
 		}
