@@ -64,6 +64,7 @@ class TestThrobber extends test.VBase {
 		grid.setIsCenterPoint(true); // default true, but can be set if needed
 
 		initElements();
+		//
 	}
 
 	// ____________________________________ setup ____________________________________
