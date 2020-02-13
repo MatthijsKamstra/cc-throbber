@@ -1,6 +1,6 @@
 package test;
 
-import cc.model.constants.Paper.*;
+import cc.model.constants.stage.*;
 import Sketcher.Globals.*;
 import Sketcher;
 import sketcher.util.ColorUtil.*;
@@ -30,18 +30,18 @@ class VBase extends SketcherBase {
 
 	public function new(?set:Settings) {
 		if (set == null) {
-			var paperW = 1080; // 1024; // video?
-			var paperH = 1080; // 1024; // video?
+			var stageW = 1080; // 1024; // video?
+			var stageH = 1080; // 1024; // video?
 
-			this.cx = (paperW / 2);
-			this.cy = (paperH / 2);
+			this.cx = (stageW / 2);
+			this.cy = (stageH / 2);
 
-			this.settings = new Settings(paperW, paperH, 'canvas');
+			this.settings = new Settings(stageW, stageH, 'canvas');
 			settings.autostart = true;
 			settings.padding = 10;
 			settings.scale = false;
 			settings.elementID = 'sketcher-canvas-wrapper';
-			// this.settings = new Settings(paperW, paperH, 'svg');
+			// this.settings = new Settings(stageW, stageH, 'svg');
 			// settings.autostart = true;
 			// settings.padding = 10;
 			// settings.scale = false;
@@ -215,7 +215,7 @@ class VBase extends SketcherBase {
 		var filename = '${wrapperDiv.id}_${Date.now().getTime()}';
 	 */
 	override function draw() {
-		console.log('DRAW (PapertoySketcherBase) :: ${toString()}');
+		console.log('DRAW (stagetoySketcherBase) :: ${toString()}');
 		sketch.clear();
 	}
 

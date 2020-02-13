@@ -24,7 +24,7 @@ class TestThrobber extends test.VBase {
 	var startTimer:Float;
 	var isStartTimerSet:Bool = false;
 	// frames
-	var seconds:Float = 60; // 60; // 10;
+	var seconds:Float = 10; // 60; // 10;
 	var FPS:Int = 60;
 	var frameTotal:Float = Math.POSITIVE_INFINITY; // 60 fps * 60 seconden = 3600
 	var frameCounter:Int = 0;

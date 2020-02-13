@@ -64,7 +64,7 @@ var Main = function() {
 	this.ccTypeArray = [test_TestThrobber];
 	var _gthis = this;
 	window.document.addEventListener("DOMContentLoaded",function(event) {
-		window.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2020-02-03 21:37:05");
+		window.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2020-02-03 22:07:14");
 		_gthis.setupArt();
 		_gthis.setupNav();
 	});
@@ -5250,7 +5250,7 @@ var test_TestThrobber = function() {
 	this.frameCounter = 0;
 	this.frameTotal = Infinity;
 	this.FPS = 60;
-	this.seconds = 60;
+	this.seconds = 10;
 	this.isStartTimerSet = false;
 	this.radiusSmall = 100;
 	this.isGoogleFontLoaded = false;
